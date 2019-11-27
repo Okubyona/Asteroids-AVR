@@ -7,11 +7,11 @@
 #include "io.h"
 
 int main(void) {
-    /* Port Initializations */
+    DDRC = 0xFF; PORTC = 0x00;
+    DDRD = 0xFF; PORTD = 0x00;
 
-    /* Microcontroller loop */
     while (1) {
-        
+
     }
 
     return 0;
