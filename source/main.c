@@ -11,7 +11,7 @@ int main(void) {
 
     /* Microcontroller loop */
     while (1) {
-        
+
     }
 
     return 0;

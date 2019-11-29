@@ -37,7 +37,7 @@ ISR(ADC_vect) {
             break;
 
         case 0x01;
-
+            ADMUX = 0x00;
             break;
 
         default:
