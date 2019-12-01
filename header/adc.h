@@ -5,6 +5,9 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+unsigned char sensor0;
+unsigned char sensor1;
+
 void ADC_init() {
     ADCSRA |= (1 << ADEN) | (1 << ADSC) | (1 << ADATE);
     // ADEN: setting this bit eneables analog-to-digital conversion.
@@ -32,11 +35,12 @@ ISR(ADC_vect) {
 
     switch (ADMUX) {
         case 0x00:
+            sensor0 = ADCH;
             ADMUX = 0x01;
-
             break;
 
         case 0x01;
+            sensor1 = ADCH;
             ADMUX = 0x00;
             break;
 

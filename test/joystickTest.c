@@ -10,7 +10,18 @@ int main(void) {
     DDRC = 0xFF; PORTC = 0x00;
     DDRD = 0xFF; PORTD = 0x00;
 
+    ADC_init();
+    LCD_init();
+
+
+    TimerSet(10);
+    TimerOn();
+
     while (1) {
+        LCD_DisplayString(1, "X: ");
+
+
+        LCD_DisplayString(17, "Y: ");
 
     }
 
