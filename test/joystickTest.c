@@ -20,8 +20,11 @@ int main(void) {
     while (1) {
         LCD_DisplayString(1, "X: ");
 
+        LCD_DisplayInteger(4, sensor0);
 
         LCD_DisplayString(17, "Y: ");
+
+        LCD_DisplayInteger(20, sensor1);
 
     }
 
