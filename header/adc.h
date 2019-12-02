@@ -39,7 +39,7 @@ ISR(ADC_vect) {
             ADMUX = 0x01;
             break;
 
-        case 0x01;
+        case 0x01:
             sensor1 = ADCH;
             ADMUX = 0x00;
             break;
