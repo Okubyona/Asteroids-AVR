@@ -1,10 +1,9 @@
 
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <stdio.h>
-#include <stdlib.h>
+<<<<<<< Updated upstream
+=======
 #include "io.h"
 
+>>>>>>> develop
 #define SET_BIT(p,i) ((p) |= (1 << (i)))
 #define CLR_BIT(p,i) ((p) &= ~(1 << (i)))
 #define GET_BIT(p,i) ((p) & (1 << (i)))
@@ -52,20 +51,12 @@ void LCD_WriteData(unsigned char Data) {
 }
 
 void LCD_DisplayString( unsigned char column, const unsigned char* string) {
-   unsigned char c = column;
-   while(*string) {
-      LCD_Cursor(c++);
-      LCD_WriteData(*string++);
+    //LCD_ClearScreen();
+    unsigned char c = column;
+    while(*string) {
+        LCD_Cursor(c++);
+        LCD_WriteData(*string++);
    }
-}
-
-// Temporary function to test joystick functionality
-void LCD_DisplayInteger(unsigned char column, unsigned char num) {
-    char buffer[10];
-
-    itoa(num, buffer, 10);
-
-    LCD_DisplayString(column, buffer);
 }
 
 void LCD_Cursor(unsigned char column) {
