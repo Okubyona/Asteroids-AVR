@@ -6,8 +6,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "io.c"
-
 void LCD_init();
 void LCD_ClearScreen(void);
 void LCD_WriteCommand (unsigned char Command);
