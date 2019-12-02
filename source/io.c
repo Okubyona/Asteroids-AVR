@@ -57,7 +57,7 @@ void LCD_DisplayString( unsigned char column, const unsigned char* string) {
 void LCD_DisplayInteger(unsigned char column, unsigned char num) {
     char buffer[10];
 
-    itoa*(num, buffer, 10);
+    itoa(num, buffer, 10);
 
     LCD_DisplayString(column, buffer);
 }
