@@ -1,11 +1,6 @@
 #ifndef __io_h__
 #define __io_h__
 
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 void LCD_init();
 void LCD_ClearScreen(void);
 void LCD_WriteCommand (unsigned char Command);

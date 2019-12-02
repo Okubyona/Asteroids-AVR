@@ -1,4 +1,8 @@
 
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "io.h"
 
 #define SET_BIT(p,i) ((p) |= (1 << (i)))
