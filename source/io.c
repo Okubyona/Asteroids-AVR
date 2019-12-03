@@ -66,7 +66,7 @@ void LCD_DisplayString(unsigned char column, const unsigned char* string) {
    }
 }
 
-//Function that builds custom characters
+//Function that builds a given custom char
 void LCD_CustomChar(unsigned char location, unsigned char* customData) {
     unsigned char i;
     // LCD CGRAM can only support 8 characters
@@ -80,6 +80,26 @@ void LCD_CustomChar(unsigned char location, unsigned char* customData) {
     }
 
     LCD_WriteCommand(0x80);
+}
+
+// Function that builds a list of custom chars
+void LCD_BuildCustomChars() {
+    //custom characters to be used with 16x2 LCD
+	unsigned char motherShip[] = { 0x09, 0x1C, 0x0E, 0x0F, 0x0F, 0x0E, 0x1C, 0x09 };
+	unsigned char basicLaser[] = { 0x00, 0x00, 0x00, 0x1F, 0x1F, 0x00, 0x00, 0x00 };
+	unsigned char megaLaser[] =  { 0x1F, 0x00, 0x00, 0x1F, 0x1F, 0x00, 0x00, 0x1F };
+	unsigned char bigAsteroid[] = {0x0E, 0x1E, 0x1E, 0x2F, 0x0F, 0x1F, 0x1F, 0x0E };
+	unsigned char medAsteroid[] = {0x00, 0x0C, 0x1E, 0x1F, 0x0F, 0x0F, 0x0E, 0x00 };
+	unsigned char smallAsteroid[] = {0x00, 0x00, 0x06, 0x0F, 0x0F, 0x06, 0x00, 0x00};
+	// each char is assigned a 'location' from 0-5 in order from top to bottom
+
+    LCD_CustomChar(0, motherShip);
+	LCD_CustomChar(1, basicLaser);
+	LCD_CustomChar(2, megaLaser);
+	LCD_CustomChar(3, bigAsteroid);
+	LCD_CustomChar(4, medAsteroid);
+	LCD_CustomChar(5, smallAsteroid);
+
 }
 
 void delay_ms(int miliSec) //for 8 Mhz crystal
