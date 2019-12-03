@@ -1,9 +1,6 @@
 
-<<<<<<< Updated upstream
-=======
 #include "io.h"
 
->>>>>>> Stashed changes
 #define SET_BIT(p,i) ((p) |= (1 << (i)))
 #define CLR_BIT(p,i) ((p) &= ~(1 << (i)))
 #define GET_BIT(p,i) ((p) & (1 << (i)))
@@ -50,15 +47,6 @@ void LCD_WriteData(unsigned char Data) {
    delay_ms(1);
 }
 
-void LCD_DisplayString( unsigned char column, const unsigned char* string) {
-    //LCD_ClearScreen();
-    unsigned char c = column;
-    while(*string) {
-        LCD_Cursor(c++);
-        LCD_WriteData(*string++);
-   }
-}
-
 void LCD_Cursor(unsigned char column) {
    if ( column < 17 ) { // 16x1 LCD: column < 9
 						// 16x2 LCD: column < 17
@@ -67,6 +55,31 @@ void LCD_Cursor(unsigned char column) {
       LCD_WriteCommand(0xB8 + column - 9);	// 16x1 LCD: column - 1
 											// 16x2 LCD: column - 9
    }
+}
+
+void LCD_DisplayString(unsigned char column, const unsigned char* string) {
+    //LCD_ClearScreen();
+    unsigned char c = column;
+    while(*string) {
+        LCD_Cursor(c++);
+        LCD_WriteData(*string++);
+   }
+}
+
+//Function that builds custom characters
+void LCD_CustomChar(unsigned char location, unsigned char* customData) {
+    unsigned char i;
+    // LCD CGRAM can only support 8 characters
+    if (location < 8 ) {
+        // command 0x40 and up forces device to point to CGRAM addresses
+        LCD_WriteCommand(0x40 + (location * 8));
+        //write byte data for current custom character
+        for (i = 0; i < 8; ++i) {
+            LCD_WriteData(customData[i]);
+        }
+    }
+
+    LCD_WriteCommand(0x80);
 }
 
 void delay_ms(int miliSec) //for 8 Mhz crystal
