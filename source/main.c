@@ -17,14 +17,16 @@ typedef enum gameSM {g_wait, g_difficulty, g_game, g_lose, g_win};
 int joystickTick(int state);
 int laserTick(int state);
 int resetTick(int state);
+int gameTick(int state);
 
 
 static unsigned char playerPos = 0;
 static unsigned char laserFired = 0;
-static unsigned char asteroidHit = 0;
+static unsigned char asteroidHit = 1;
 
 unsigned short EEMEM ee_highscore = 0;
 unsigned short highscore;
+unsigned short score;
 
 int main(void) {
 	DDRA = 0x00; PORTA = 0x0C;
@@ -37,7 +39,7 @@ int main(void) {
 
 	unsigned char i;
 	static task task1, task2, task3, task4;
-	task *tasks[] = {&task1, &task2, &task3/*, &task4*/};
+	task *tasks[] = {&task1, &task2, &task3, &task4};
 	const unsigned short numTasks = sizeof(tasks) / sizeof(task*);
 
 	task1.state = j_wait;
@@ -55,6 +57,12 @@ int main(void) {
 	task3.elapsedTime = task3.period;
 	task3.TickFct = &resetTick;
 
+    task4.state = g_wait;
+    task4.period = 200;
+    task4.elapsedTime = task4.period;
+    task4.TickFct = &gameTick;
+
+
 	unsigned long GCD = tasks[0]->period;
 	for (i = 1; i < numTasks; ++i) {
 		GCD = findGCD(GCD, tasks[i]->period);
@@ -62,7 +70,7 @@ int main(void) {
 
 	ADC_init();
 	LCD_init();
-	TimerSet(50);
+	TimerSet(GCD);
 	TimerOn();
 
 
@@ -169,10 +177,63 @@ int resetTick(int state) {
 
 		case r_press:
 		eeprom_write_word(&ee_highscore, 0);
+        task4.state = wait;
 		break;
 
 		case r_hold: break;
 	}
 
 	return state;
+}
+
+int gameTick(int state) {
+    unsigned char collision = 0;
+    unsigned char i;
+    char screen[17];
+    char easy0[61];
+    char easy1[61];
+    sprintf(easy0, " p                   s     m   s       m          s s s     ");
+    sprintf(easy1, "               s     s       s     s       m  s          L  ");
+
+    unsigned char gametime = strlen(easy0);
+
+
+    switch (state) {
+        case g_wait:
+            state = A3 ? g_difficulty: g_wait;
+            break;
+
+        case g_difficulty:
+            state = A4 ? g_game: g_difficulty;
+            break;
+
+        case g_game:
+            if (i < gametime) { state = g_game; }
+            else if (collision) { state = g_lose; }
+            else { state = g_win; }
+            break;
+
+        case g_lose:
+            state = A4 ? g_wait: g_lose;
+            break;
+
+        case g_win:
+            state = A4 ? g_wait: g_win;
+            break;
+
+    }
+
+    switch (state) {
+        case g_wait:
+            playerPos = 0;
+            asteroidHit = 1;
+
+            sprintf(screen, "  Asteroids-AVR ");
+            LCD_DisplayString(1, screen);
+            break;
+
+    }
+
+
+    return state;
 }
