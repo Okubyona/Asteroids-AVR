@@ -20,8 +20,8 @@ However, this version of the game is played on an extremely limited 16x2 LCD scr
 ## User Guide
 
 The game is controlled by the joystick and button seen in the image below.
-
-![Alt text](/images/controls.jpg =400x300)
+ 
+<img src="https://github.com/Okubyona/Asteroids-AVR/blob/master/images/controls.jpg" width="400" height="300" />
 
 The player's ship is moved up or down with the joystick (up is towards the wires)
 and the ship fires  its laser using the single button connected to the brown wire.
@@ -71,7 +71,7 @@ Extra hardware used aside from the ATmega1284 seen in the following photos
 
 * 16x2 LCD Screen
 
-![Alt text](/images/joystick.jpg =400x300)
+<img src="https://github.com/Okubyona/Asteroids-AVR/blob/master/images/joystick.jpg" width="400" height="300" />
 
 ## Wiring
 
@@ -80,11 +80,11 @@ to A0 and A1, joystick switch on A2 and the single button on A3
 
 *(Blue and purple wires are the ground and 5v wires for the joystick.)*
 
-![Alt text](/images/wiring_input.jpg =400x300)
+<img src="https://github.com/Okubyona/Asteroids-AVR/blob/master/images/wiring_input.jpg" width="400" height="300" />
 
 Wiring for the LCD screen
 
-![Alt text](/images/wiring_output.jpg =400x300)
+<img src="https://github.com/Okubyona/Asteroids-AVR/blob/master/images/wiring_output.jpg" width="400" height="300" />
 
 ## Technologies Learned
 
