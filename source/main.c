@@ -14,7 +14,7 @@ typedef enum joystickSM { j_wait, j_left, j_right};
 typedef enum laserSM { b_wait, b_press, b_cooldown};
 typedef enum resetSM {r_wait, r_press, r_hold};
 typedef enum menuSM {m_title, m_difficulty_select, m_highscore, m_idle};
-typedef enum gameSM {g_wait, g_game, g_lose, g_win};
+typedef enum gameSM {g_wait, g_game, g_lose, g_win, g_highscore};
 
 int joystickTick(int state);
 int laserTick(int state);
@@ -33,6 +33,8 @@ static unsigned char resetFlag = 0;  //  tells menu/ game to reset game/ highsco
 static unsigned char menuEnd = 0;	// menu end for gameStart
 static unsigned char gameStart = 0; // lets gameSM know when to run.
 static unsigned char gameEnd = 0;
+static unsigned char gameWon = 0;
+static unsigned int gameTime = 0; // Game will run for 45 seconds
 
 uint16_t EEMEM ee_highscore_easy;
 
@@ -199,14 +201,14 @@ int resetTick(int state) {
 
 	switch (state) {
 		case r_wait:
-			resetFlag = 0;
-			break;
+		resetFlag = 0;
+		break;
 
 		case r_press:
-			eeprom_write_word(&ee_highscore_easy, 0);
-			highscore = &ee_highscore_easy;
-			resetFlag = 1;
-			break;
+		eeprom_write_word(&ee_highscore_easy, 0);
+		highscore = &ee_highscore_easy;
+		resetFlag = 1;
+		break;
 
 		case r_hold: break;
 	}
@@ -222,74 +224,74 @@ int menuTick(int state) {
 
 	switch (state) {
 		case m_title:
-			state = laserFired ? m_difficulty_select: m_title;
-			break;
+		state = laserFired ? m_difficulty_select: m_title;
+		break;
 
 		case m_difficulty_select:
-			state = laserFired ? m_highscore: m_difficulty_select;
-			if (resetFlag) { state = m_title; }
-			break;
+		state = laserFired ? m_highscore: m_difficulty_select;
+		if (resetFlag) { state = m_title; }
+		break;
 
 		case m_highscore:
-			state = laserFired ? m_idle: m_highscore;
-			if (resetFlag) { state = m_title; }
-			break;
+		state = laserFired ? m_idle: m_highscore;
+		if (resetFlag) { state = m_title; }
+		break;
 
 		case m_idle:
-			state = gameEnd ? m_title: m_idle;
-			if (resetFlag) { state = m_title; }
-			break;
+		state = gameEnd ? m_title: m_idle;
+		if (resetFlag) { state = m_title; }
+		break;
 	}
 
 	switch (state) {
 		case m_title:
-			menuEnd = 0;
-			sprintf(buffer0, "Asteroids Puzzle");
-			if (strcmp(buffer0, check0) != 0) { // if strings aren't equal
+		menuEnd = 0;
+		sprintf(buffer0, "Asteroids Puzzle");
+		if (strcmp(buffer0, check0) != 0) { // if strings aren't equal
 			LCD_DisplayString(1, buffer0);
 			strcpy(check0, buffer0);
-			}
-			sprintf(buffer1, "                ");
-			if (strcmp(buffer1, check1) != 0) {
+		}
+		sprintf(buffer1, "                ");
+		if (strcmp(buffer1, check1) != 0) {
 			LCD_DisplayString(17, buffer1);
 			strcpy(check1, buffer1);
-			}
-			break;
+		}
+		break;
 
 		case m_difficulty_select:
-			sprintf(buffer0, "   Difficulty   ");
-			if (strcmp(buffer0, check0) != 0) {
-				LCD_DisplayString(1, buffer0);
-				strcpy(check0, buffer0);
-			}
-			sprintf(buffer1, "      Easy      ");
-			if (strcmp(buffer1, check1) != 0) {
-				LCD_DisplayString(17, buffer1);
-				strcpy(check1, buffer1);
-				LCD_Cursor(17 + 4);
-			}
-			break;
+		sprintf(buffer0, "   Difficulty   ");
+		if (strcmp(buffer0, check0) != 0) {
+			LCD_DisplayString(1, buffer0);
+			strcpy(check0, buffer0);
+		}
+		sprintf(buffer1, "      Easy      ");
+		if (strcmp(buffer1, check1) != 0) {
+			LCD_DisplayString(17, buffer1);
+			strcpy(check1, buffer1);
+			LCD_Cursor(17 + 4);
+		}
+		break;
 
 		case m_highscore:
-			sprintf(buffer0, "   High Score   ");
-			if (strcmp(buffer0, check0) != 0) {
-				LCD_DisplayString(1, buffer0);
-				strcpy(check0, buffer0);
-			}
-			sprintf(buffer1, "       %d", highscore);
-			if (strcmp(buffer1, check1) != 0) {
-				LCD_DisplayString(17, buffer1);
-				LCD_WriteData(' ');
-				LCD_WriteData(' ');
-				LCD_WriteData(' ');
-				LCD_Cursor(0);
-				strcpy(check1, buffer1);
-			}
-			break;
+		sprintf(buffer0, "   High Score   ");
+		if (strcmp(buffer0, check0) != 0) {
+			LCD_DisplayString(1, buffer0);
+			strcpy(check0, buffer0);
+		}
+		sprintf(buffer1, "       %d", highscore);
+		if (strcmp(buffer1, check1) != 0) {
+			LCD_DisplayString(17, buffer1);
+			LCD_WriteData(' ');
+			LCD_WriteData(' ');
+			LCD_WriteData(' ');
+			LCD_Cursor(0);
+			strcpy(check1, buffer1);
+		}
+		break;
 
 		case m_idle:
-			menuEnd = 1;
-			break;
+		menuEnd = 1;
+		break;
 
 	}
 
@@ -297,6 +299,62 @@ int menuTick(int state) {
 }
 
 int gameTick(int state) {
+	const unsigned char easy_level0[] = "     s   s m   L";
+	const unsigned char easy_level1[] = "     m  s s  s s";
+	static unsigned char level_row0[17];
+	static unsigned char level_row1[17];
+
+	switch (state) {
+		case g_wait:
+		state = menuEnd ? g_game: g_wait;
+		break;
+
+		case g_game:
+		if (gameTime == 45000) {
+			gameStart = 0;
+			state = gameWon ? g_win: g_lose;
+		}
+		else { state = g_game; }
+
+		case g_lose:
+		state = laserFired ? g_wait: g_lose;
+		break;
+
+		case g_win:
+		if (laserFired && score > highscore) { state = g_highscore; }
+		else if (laserFired && score <= highscore) { state = g_wait; }
+		else { state = g_win; }
+		break;
+
+		case g_highscore:
+		state = laserFired ? g_wait: g_highscore;
+		break;
+
+	}
+
+	switch (state) {
+		case g_wait:
+		gameTime = 0;
+		gameStart = 0;
+		gameEnd = 0;
+		score = 0;
+		asteroidHit = 0;
+		if (strcmp(level_row0, easy_level0) != 0) { strcpy(level_row0, easy_level0); }
+		if (strcmp(level_row1, easy_level1) != 0) {	strcpy(level_row1, easy_level1); }
+		break;
+
+		case g_game:
+		gameStart = 1;
+		LCD_DrawGame(level_row0, level_row1, playerPos);
+
+		if (laserFired) {
+			activeLaser = 1;
+		}
+
+		gameTime += 100;
+		break;
+
+	}
 
 	return state;
 }

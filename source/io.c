@@ -102,6 +102,28 @@ void LCD_BuildCustomChars() {
 
 }
 
+void LCD_DrawGame(const unsigned char *row0, const unsigned char *row1, unsigned char playerPos) {
+
+    for (unsigned char i = 0; i < strlen(row0); ++i) {
+        LCD_Cursor(i + 1);
+        if (row0[i] == 's') { LCD_WriteData(5); }
+        else if (row0[i] == 'm') { LCD_WriteData(4); }
+        else if (row0[i] == 'L') { LCD_WriteData(3); }
+        else if (row0[i] == 'l') { LCD_WriteData(1); }
+        else { LCD_WriteData(row0[i]) ;}
+    }
+
+    for (unsigned char i = 0; i < strlen(row0); ++i) {
+        LCD_Cursor(i + 17);
+        if (row1[i] == 's') { LCD_WriteData(5); }
+        else if (row1[i] == 'm') { LCD_WriteData(4); }
+        else if (row1[i] == 'L') { LCD_WriteData(3); }
+        else if (row1[i] == 'l') { LCD_WriteData(1); }
+        else { LCD_WriteData(row1[i]) ;}
+    }
+
+}
+
 void delay_ms(int miliSec) //for 8 Mhz crystal
 
 {

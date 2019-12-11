@@ -14,5 +14,6 @@ void LCD_Cursor (unsigned char column);
 void LCD_DisplayString(unsigned char column ,const unsigned char *string);
 void LCD_CustomChar(unsigned char location, unsigned char *customData);
 void LCD_BuildCustomChars();
+void LCD_DrawGame(const unsigned char *row0, const unsigned char *row1, unsigned char playerPos);
 void delay_ms(int miliSec);
 #endif
