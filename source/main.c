@@ -28,6 +28,8 @@ int gameTick(int state);
 static unsigned char playerPos = 0;
 static unsigned char laserFired = 0; // tell game to draw laser
 static unsigned char activeLaser = 0; // only one laser can be on the screen at a time
+static unsigned char laserPos = 2;
+static unsigned char laserRow = 0;
 static unsigned char asteroidHit = 0; // 0-4 where 1 = small 2 = medium 3 = large and 0 = no hit;
 static unsigned char resetFlag = 0;  //  tells menu/ game to reset game/ highscore.
 static unsigned char menuEnd = 0;	// menu end for gameStart
@@ -123,7 +125,7 @@ int joystickTick(int state) {
 		break;
 
 		case j_right:
-		if (sensor1 > 128) { state = j_right; }
+		if (sensor1 > 140) { state = j_right; }
 		else {state = j_wait; }
 		break;
 
@@ -246,6 +248,7 @@ int menuTick(int state) {
 	switch (state) {
 		case m_title:
 		menuEnd = 0;
+		gameStart = 0;
 		sprintf(buffer0, "Asteroids Puzzle");
 		if (strcmp(buffer0, check0) != 0) { // if strings aren't equal
 			LCD_DisplayString(1, buffer0);
@@ -307,6 +310,7 @@ int gameTick(int state) {
 	switch (state) {
 		case g_wait:
 		state = menuEnd ? g_game: g_wait;
+		laserFired = 0;
 		break;
 
 		case g_game:
@@ -315,6 +319,7 @@ int gameTick(int state) {
 			state = gameWon ? g_win: g_lose;
 		}
 		else { state = g_game; }
+		break;
 
 		case g_lose:
 		state = laserFired ? g_wait: g_lose;
@@ -339,6 +344,8 @@ int gameTick(int state) {
 		gameEnd = 0;
 		score = 0;
 		asteroidHit = 0;
+		activeLaser = 0;
+		laserPos = 2;
 		if (strcmp(level_row0, easy_level0) != 0) { strcpy(level_row0, easy_level0); }
 		if (strcmp(level_row1, easy_level1) != 0) {	strcpy(level_row1, easy_level1); }
 		break;
@@ -347,9 +354,39 @@ int gameTick(int state) {
 		gameStart = 1;
 		LCD_DrawGame(level_row0, level_row1, playerPos);
 
-		if (laserFired) {
+		if (laserFired && activeLaser == 0) {
+			if (playerPos) { level_row1[laserPos] = 'l'; laserRow = 1;}
+			else { level_row0[laserPos] = 'l'; laserRow = 0;}
 			activeLaser = 1;
 		}
+
+		if (activeLaser) {
+			if (laserRow && laserPos != 16) {
+				if (level_row1[laserPos + 1] == ' ') {
+					level_row1[laserPos] = level_row1[laserPos + 1];
+					level_row1[laserPos + 1] = 'l';
+				}
+				else if (level_row1[laserPos + 1] == 's') {
+					activeLaser = 0;
+					score += 25;
+					level_row1[laserPos] = ' ';
+					level_row1[laserPos + 1] = ' ';
+					laserPos = 2;
+				}
+				else if (level_row1[laserPos + 1] == 'm') {
+					activeLaser = 0;
+					score += 50;
+					level_row1[laserPos] = ' ';
+					if (level_row0[laserPos + 1] != ' ') { level_row0[laserPos] = 's'; }
+					else { level_row0[laserPos + 1] = 's'; }
+					level_row1[laserPos + 1] = 's';
+
+				}
+			}
+			++laserPos;
+		}
+
+
 
 		gameTime += 100;
 		break;

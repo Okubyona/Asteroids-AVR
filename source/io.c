@@ -106,7 +106,8 @@ void LCD_DrawGame(const unsigned char *row0, const unsigned char *row1, unsigned
 
     for (unsigned char i = 0; i < strlen(row0); ++i) {
         LCD_Cursor(i + 1);
-        if (row0[i] == 's') { LCD_WriteData(5); }
+        if (i == 1 && playerPos == 0) { LCD_WriteData(0); }
+        else if (row0[i] == 's') { LCD_WriteData(5); }
         else if (row0[i] == 'm') { LCD_WriteData(4); }
         else if (row0[i] == 'L') { LCD_WriteData(3); }
         else if (row0[i] == 'l') { LCD_WriteData(1); }
@@ -115,7 +116,8 @@ void LCD_DrawGame(const unsigned char *row0, const unsigned char *row1, unsigned
 
     for (unsigned char i = 0; i < strlen(row0); ++i) {
         LCD_Cursor(i + 17);
-        if (row1[i] == 's') { LCD_WriteData(5); }
+        if (i == 1 && playerPos == 1) { LCD_WriteData(0); }
+        else if (row1[i] == 's') { LCD_WriteData(5); }
         else if (row1[i] == 'm') { LCD_WriteData(4); }
         else if (row1[i] == 'L') { LCD_WriteData(3); }
         else if (row1[i] == 'l') { LCD_WriteData(1); }
